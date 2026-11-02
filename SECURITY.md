@@ -1,6 +1,6 @@
 # Security policy
 
-请勿在公开 issue 中附上可利用漏洞详情、真人采访、密钥或登录信息。优先使用仓库的 GitHub Private Vulnerability Reporting（由仓库维护者启用）；若尚未启用，先创建不含技术细节的联系请求，等待维护者提供私密渠道。
+请勿在公开 issue 中附上可利用漏洞详情、真人采访、密钥或登录信息。本仓库已启用 [GitHub 私密漏洞报告](https://github.com/motoneko/life-story-studio/security/advisories/new)，请通过该入口联系维护者。分叉仓库的维护者需自行启用私密报告渠道。
 
 部署方负责 HTTPS、SMTP、模型供应商数据处理约定、磁盘/备份权限与密钥轮换。分享原声的链接是限时访问凭据，获得链接的人可下载内容；不要把访问URL写入公开日志。默认不启用公开内容索引。
 

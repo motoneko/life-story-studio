@@ -16,12 +16,12 @@
 
 ## GitHub CI
 
-仓库工作流配置Python 3.10/3.12自动化测试、发布文件扫描、Chromium录音恢复/完整页面流程及Docker构建。具体执行结果见仓库Actions；发布时核对远端结果。
+初始发布提交 `6cad315` 的[GitHub Actions验收](https://github.com/motoneko/life-story-studio/actions/runs/41433566122)全部通过：Python 3.10/3.12各56项自动化测试、发布文件扫描、Chromium录音恢复/完整页面流程，以及Docker镜像构建。后续提交状态见仓库Actions。
 
 ## 外部验收边界
 
 - 没有真实AI密钥：未验证真人口述识别准确率、方言、多说话人、真实成稿质量、模型延迟和费用。
-- 本机Docker Desktop daemon未启动，本地无法构建镜像；Docker构建由GitHub CI验证。
+- 本机Docker Desktop daemon未启动，本地无法构建镜像；GitHub CI已完成镜像构建，实际部署主机的容器启动与域名配置仍需验收。
 - Windows PowerShell启动脚本未在Windows Python中运行验收。
 - 未进行iOS/Android真机矩阵、操作系统异常断电、真实SMTP投递、域名TLS公网部署、并发压力或印刷打样验收。
 - 测试不能代替真实授权核验、出版资质审查或支付/印厂集成。
