@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+      RUN_WORKER: 'false'
+    volumes:
+      - studio-data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: [uvicorn, app.main:app, --host, 0.0.0.0, --port, '8000', --workers, '1', --no-access-log]
+  worker:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+    volumes:
+      - studio-data:/app/data
+    command: [python, -m, app.worker]
+    healthcheck:
+      disable: true
+    depends_on:
+      app:
+        condition: service_healthy
+  proxy:
+    image: caddy:2
+    profiles: [production]
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+volumes:
+  studio-data:
+  caddy-data:
+  caddy-config:

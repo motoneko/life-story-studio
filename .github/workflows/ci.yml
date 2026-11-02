@@ -1,0 +1,57 @@
+name: tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - run: python -m pip install -r requirements.lock
+      - run: python -m pytest -q
+      - run: python -m compileall -q app tests
+      - run: python scripts/check_release.py
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.lock playwright
+      - run: python -m playwright install --with-deps chromium
+      - run: python tests/browser_recording_recovery.py
+      - name: Full application browser flow
+        env:
+          DATA_DIR: /tmp/life-story-browser-ci
+          AI_MODE: demo
+        run: |
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --no-access-log &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          python - <<'PY'
+          import time, urllib.request
+          for attempt in range(100):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.2)
+          else:
+              raise RuntimeError('Application did not start')
+          PY
+          python tests/browser_smoke.py
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t life-story-studio:ci .
